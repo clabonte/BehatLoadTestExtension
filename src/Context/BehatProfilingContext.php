@@ -67,7 +67,7 @@ class BehatProfilingContext implements Context
     /**
      * @BeforeFeature
      */
-    public function onFeatureStart(BeforeFeatureScope $scope)
+    public static function onFeatureStart(BeforeFeatureScope $scope)
     {
         ProfilerFactory::getProfiler()->start(Action::FEATURE, $scope->getName());
     }
@@ -75,7 +75,7 @@ class BehatProfilingContext implements Context
     /**
      * @AfterFeature
      */
-    public function onFeatureStop(AfterFeatureScope $scope)
+    public static function onFeatureStop(AfterFeatureScope $scope)
     {
         $result = $scope->getTestResult();
         ProfilerFactory::getProfiler()->stop(Action::FEATURE, $scope->getName(), $result->isPassed(), $result->getResultCode());
