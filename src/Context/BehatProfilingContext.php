@@ -26,6 +26,10 @@ class BehatProfilingContext implements Context
 {
     /** @var string */
     static private $filename;
+    /** @var string */
+    static private $group;
+    /** @var string */
+    static private $configFile;
 
     public function __construct(array $parameters)
     {
@@ -33,6 +37,14 @@ class BehatProfilingContext implements Context
             self::$filename = $parameters['filename'];
         } else {
             self::$filename = 'result.csv';
+        }
+        if (isset($parameters['group'])) {
+            self::$group = $parameters['group'];
+        } else {
+            self::$group = '';
+        }
+        if (isset($parameters['configFile'])) {
+            self::$configFile = $parameters['configFile'];
         }
     }
 
@@ -43,7 +55,11 @@ class BehatProfilingContext implements Context
     {
         // Load the configuration
         // Prepare the profiler
-        ProfilerFactory::setProfiler(new DefaultProfiler());
+        $profiler = new DefaultProfiler();
+        if (!empty(self::$configFile)) {
+            $profiler->loadConfigFile(self::$configFile);
+        }
+        ProfilerFactory::setProfiler($profiler);
 
         ProfilerFactory::getProfiler()->start(Action::SUITE, $scope->getName());
     }
@@ -60,7 +76,7 @@ class BehatProfilingContext implements Context
         // Pass completed actions to the formatter
         $actions = ProfilerFactory::getProfiler()->listCompletedActions();
         $formatter = new JMeterCsvFormatter(self::$filename);
-        $formatter->formatProfilerActions($actions);
+        $formatter->formatProfilerActions($actions, self::$group);
         $formatter->close();
     }
 

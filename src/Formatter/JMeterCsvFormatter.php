@@ -47,7 +47,7 @@ class JMeterCsvFormatter implements FormatterInterface
             $duration = $stopTime - $startTime;
             list($sec, $usec) = explode('.', $startTime);
 
-            $fields[0] = date('Y-m-d H:i:s', $sec) . $usec;
+            $fields[0] = (int) ($startTime * 1000);
             $fields[1] = (int) ($duration * 1000);
             $fields[2] = $profilerAction->getAction() .'.'.$profilerAction->getLabel();
             $fields[3] = $profilerAction->getResponseCode();

@@ -12,6 +12,8 @@ class DefaultProfiler implements ProfilerInterface
     private $currentActions;
     /** @var ProfilerAction[] */
     private $completedActions;
+    /** @var array */
+    private $config = [];
 
     /**
      * DefaultProfiler constructor.
@@ -89,6 +91,23 @@ class DefaultProfiler implements ProfilerInterface
             $profileAction = $this->currentActions[$action][$label];
             unset ($this->currentActions[$action][$label]);
 
+            // Check if we need to do some analysis on this action...
+            if (isset($this->config[$action][$label])) {
+                // Check if we have been asked to override 'success' based on the reponse code
+                if (isset($this->config[$action][$label][$responseCode]) && ($success != $this->config[$action][$label][$responseCode])) {
+                    $success = $this->config[$action][$label][$responseCode];
+                    $message = 'Result overriden as per config. '.$message;
+                }
+
+                // Check if we need to override 'success' based on the delay
+                if (isset($this->config[$action][$label]['max_delay'])) {
+                    if ( ($profileAction->getStartTime() - $timestamp > $this->config[$action][$label]['max_delay']) && $success) {
+                        $message = 'Delay greater than '.$this->config[$action][$label]['max_delay']. '. '.$message;
+                        $success = false;
+                    }
+                }
+
+            }
             $profileAction->close($timestamp, $success, $responseCode, $message, $data);
             $this->completedActions[] = $profileAction;
         }
@@ -173,5 +192,13 @@ class DefaultProfiler implements ProfilerInterface
     {
         // TODO Make sure time is synchronized with a reliable source and adjust accordingly
         return microtime(true);
+    }
+
+    public function loadConfigFile($configFile)
+    {
+        if (!file_exists($configFile)) {
+            throw new \Exception('Invalid configFile provided: ' . $configFile);
+        }
+        $this->config = json_decode(file_get_contents($configFile), true);
     }
 }
