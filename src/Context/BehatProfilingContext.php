@@ -10,6 +10,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeStepScope;
 use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
+use BehatProfiling\Formatter\JMeterCsvFormatter;
 use BehatProfiling\Profiler\Action;
 use BehatProfiling\Profiler\DefaultProfiler;
 use BehatProfiling\Profiler\EmptyProfiler;
@@ -23,6 +24,18 @@ use BehatProfiling\Profiler\ProfilerInterface;
  */
 class BehatProfilingContext implements Context
 {
+    /** @var string */
+    static private $filename;
+
+    public function __construct(array $parameters)
+    {
+        if (isset($parameters['filename'])) {
+            self::$filename = $parameters['filename'];
+        } else {
+            self::$filename = 'result.csv';
+        }
+    }
+
     /**
      * @BeforeSuite
      */
@@ -38,13 +51,17 @@ class BehatProfilingContext implements Context
     /**
      * @AfterSuite
      */
-    public function onSuiteStop(AfterSuiteScope $scope)
+    public static function onSuiteStop(AfterSuiteScope $scope)
     {
         $result = $scope->getTestResult();
         ProfilerFactory::getProfiler()->stop(Action::SUITE, $scope->getName(), $result->isPassed(), $result->getResultCode());
         ProfilerFactory::getProfiler()->stopAll(false, '', 'Test suite stopped');
 
         // Pass completed actions to the formatter
+        $actions = ProfilerFactory::getProfiler()->listCompletedActions();
+        $formatter = new JMeterCsvFormatter(self::$filename);
+        $formatter->formatProfilerActions($actions);
+        $formatter->close();
     }
 
     /**

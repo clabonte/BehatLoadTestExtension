@@ -1,7 +1,7 @@
 <?php
 namespace BehatProfiling\Formatter;
 
-use BehatLoadTest\Profiler\ProfilerAction;
+use BehatProfiling\Profiler\ProfilerAction;
 
 /**
  * Class JMeterCsvFormatter
@@ -24,9 +24,12 @@ class JMeterCsvFormatter implements FormatterInterface
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->escapeChar = $escapeChar;
-        $this->fp = fopen($filename, 'w');
-
-        $this->printHeader();
+        if (file_exists($filename)) {
+            $this->fp = fopen($filename, 'a');
+        } else {
+            $this->fp = fopen($filename, 'w');
+            $this->printHeader();
+        }
     }
 
     /**
