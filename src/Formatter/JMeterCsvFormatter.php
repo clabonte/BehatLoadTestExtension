@@ -67,7 +67,7 @@ class JMeterCsvFormatter implements FormatterInterface
 
     private function printHeader()
     {
-        $header = array('timeStamp','time','label','responseCode','threadName','dataType','success','failureMessage');
+        $header = array('timeStamp','elapsed','label','responseCode','threadName','dataType','success','failureMessage');
         fputcsv($this->fp, $header, $this->delimiter, $this->enclosure, $this->escapeChar);
     }
 

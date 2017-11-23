@@ -85,7 +85,7 @@ class BehatProfilingContext implements Context
      */
     public static function onFeatureStart(BeforeFeatureScope $scope)
     {
-        ProfilerFactory::getProfiler()->start(Action::FEATURE, $scope->getName());
+        ProfilerFactory::getProfiler()->start(Action::FEATURE, $scope->getFeature()->getTitle());
     }
 
     /**
@@ -94,7 +94,7 @@ class BehatProfilingContext implements Context
     public static function onFeatureStop(AfterFeatureScope $scope)
     {
         $result = $scope->getTestResult();
-        ProfilerFactory::getProfiler()->stop(Action::FEATURE, $scope->getName(), $result->isPassed(), $result->getResultCode());
+        ProfilerFactory::getProfiler()->stop(Action::FEATURE, $scope->getFeature()->getTitle(), $result->isPassed(), $result->getResultCode());
     }
 
     /**
@@ -102,7 +102,7 @@ class BehatProfilingContext implements Context
      */
     public function onScenarioStart(BeforeScenarioScope $scope)
     {
-        ProfilerFactory::getProfiler()->start(Action::SCENARIO, $scope->getName());
+        ProfilerFactory::getProfiler()->start(Action::SCENARIO, $scope->getScenario()->getTitle());
     }
 
     /**
@@ -111,7 +111,7 @@ class BehatProfilingContext implements Context
     public function onScenarioStop(AfterScenarioScope $scope)
     {
         $result = $scope->getTestResult();
-        ProfilerFactory::getProfiler()->stop(Action::SCENARIO, $scope->getName(), $result->isPassed(), $result->getResultCode());
+        ProfilerFactory::getProfiler()->stop(Action::SCENARIO, $scope->getScenario()->getTitle(), $result->isPassed(), $result->getResultCode());
     }
 
     /**
@@ -119,7 +119,7 @@ class BehatProfilingContext implements Context
      */
     public function onStepStart(BeforeStepScope $scope)
     {
-        ProfilerFactory::getProfiler()->start(Action::STEP, $scope->getName());
+        ProfilerFactory::getProfiler()->start(Action::STEP, $scope->getStep()->getText());
     }
 
     /**
@@ -128,7 +128,7 @@ class BehatProfilingContext implements Context
     public function onStepStop(AfterStepScope $scope)
     {
         $result = $scope->getTestResult();
-        ProfilerFactory::getProfiler()->stop(Action::STEP, $scope->getName(), $result->isPassed(), $result->getResultCode());
+        ProfilerFactory::getProfiler()->stop(Action::STEP, $scope->getStep()->getText(), $result->isPassed(), $result->getResultCode());
     }
 
 }
