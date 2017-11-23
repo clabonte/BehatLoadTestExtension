@@ -93,7 +93,7 @@ class DefaultProfiler implements ProfilerInterface
 
             // Check if we need to do some analysis on this action...
             if (isset($this->config[$action][$label])) {
-                // Check if we have been asked to override 'success' based on the reponse code
+                // Check if we have been asked to override 'success' based on the response code
                 if (isset($this->config[$action][$label][$responseCode]) && ($success != $this->config[$action][$label][$responseCode])) {
                     $success = $this->config[$action][$label][$responseCode];
                     $message = 'Result overriden as per config. '.$message;
@@ -106,8 +106,15 @@ class DefaultProfiler implements ProfilerInterface
                         $success = false;
                     }
                 }
-
             }
+
+            if (isset($this->config[$action]['max_delay']) && !isset($this->config[$action][$label]['max_delay']) && $success) {
+                if ( ($profileAction->getStartTime() - $timestamp > $this->config[$action][$label]['max_delay']) && $success) {
+                    $message = 'Delay for '.$action.' greater than '.$this->config[$action][$label]['max_delay']. '. '.$message;
+                    $success = false;
+                }
+            }
+
             $profileAction->close($timestamp, $success, $responseCode, $message, $data);
             $this->completedActions[] = $profileAction;
         }
