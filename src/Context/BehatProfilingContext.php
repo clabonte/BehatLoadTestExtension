@@ -66,7 +66,7 @@ class BehatProfilingContext implements Context
         }
         ProfilerFactory::setProfiler($profiler);
 
-        ProfilerFactory::getProfiler()->start(Action::SUITE, $scope->getName());
+        ProfilerFactory::getProfiler()->start(Action::SUITE, $scope->getSuite()->getName());
     }
 
     /**
@@ -75,7 +75,7 @@ class BehatProfilingContext implements Context
     public static function onSuiteStop(AfterSuiteScope $scope)
     {
         $result = $scope->getTestResult();
-        ProfilerFactory::getProfiler()->stop(Action::SUITE, $scope->getName(), $result->isPassed(), $result->getResultCode());
+        ProfilerFactory::getProfiler()->stop(Action::SUITE, $scope->getSuite()->getName(), $result->isPassed(), $result->getResultCode());
         ProfilerFactory::getProfiler()->stopAll(false, '', 'Test suite stopped');
 
         // Pass completed actions to the formatter
