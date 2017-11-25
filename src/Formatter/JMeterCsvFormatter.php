@@ -24,10 +24,10 @@ class JMeterCsvFormatter implements FormatterInterface
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->escapeChar = $escapeChar;
-        $headerRequired = false;
+        $headerRequired = true;
 
         if (file_exists($filename)) {
-            $headerRequired = true;
+            $headerRequired = false;
         }
 
         $this->fp = fopen($filename, 'a');
