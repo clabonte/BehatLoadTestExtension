@@ -38,11 +38,15 @@ class BehatProfilingContext implements Context
         } else {
             self::$filename = 'result.csv';
         }
-        if (isset($parameters['group'])) {
-            self::$group = $parameters['group'];
-        } else {
-            self::$group = '';
+        self::$group = getenv('ThreadGroup');
+        if (empty(self::$group)) {
+            if (isset($parameters['group'])) {
+                self::$group = $parameters['group'];
+            } else {
+                self::$group = '';
+            }
         }
+
         if (isset($parameters['configFile'])) {
             self::$configFile = $parameters['configFile'];
         }
