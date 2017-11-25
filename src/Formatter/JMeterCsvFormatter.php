@@ -24,12 +24,32 @@ class JMeterCsvFormatter implements FormatterInterface
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->escapeChar = $escapeChar;
+        $headerRequired = false;
+
         if (file_exists($filename)) {
-            $this->fp = fopen($filename, 'a');
-        } else {
-            $this->fp = fopen($filename, 'w');
+            $headerRequired = true;
+        }
+
+        $this->fp = fopen($filename, 'a');
+
+        $tries = 0;
+        do {
+            $result = flock($this->fp, LOCK_EX);
+            if (!$result) {
+                $tries++;
+                sleep(5);
+            }
+        } while ( ($result === false) && ($tries < 60) );
+
+        if (!$result) {
+            fclose($this->fp);
+            throw new \Exception("Failed to acquire file lock");
+        }
+
+        if ($headerRequired) {
             $this->printHeader();
         }
+
     }
 
     /**
@@ -62,6 +82,8 @@ class JMeterCsvFormatter implements FormatterInterface
 
     public function close()
     {
+        fflush($this->fp);            // flush output before releasing the lock
+        flock($this->fp, LOCK_UN);
         fclose($this->fp);
     }
 
