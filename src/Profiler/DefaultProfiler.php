@@ -101,7 +101,7 @@ class DefaultProfiler implements ProfilerInterface
 
                 // Check if we need to override 'success' based on the delay
                 if (isset($this->config[$action][$label]['max_delay'])) {
-                    if ( ($profileAction->getStartTime() - $timestamp > $this->config[$action][$label]['max_delay']) && $success) {
+                    if ( ($timestamp - $profileAction->getStartTime() > $this->config[$action][$label]['max_delay']) && $success) {
                         $message = 'Delay greater than '.$this->config[$action][$label]['max_delay']. '. '.$message;
                         $success = false;
                     }
@@ -109,7 +109,7 @@ class DefaultProfiler implements ProfilerInterface
             }
 
             if (isset($this->config[$action]['max_delay']) && !isset($this->config[$action][$label]['max_delay']) && $success) {
-                if ( ($profileAction->getStartTime() - $timestamp > $this->config[$action][$label]['max_delay']) && $success) {
+                if ( ($timestamp - $profileAction->getStartTime() > $this->config[$action][$label]['max_delay']) && $success) {
                     $message = 'Delay for '.$action.' greater than '.$this->config[$action][$label]['max_delay']. '. '.$message;
                     $success = false;
                 }

@@ -48,6 +48,7 @@ class BehatProfilingContext implements Context
         }
 
         if (isset($parameters['configFile'])) {
+            ProfilerFactory::getProfiler()->loadConfigFile($parameters['configFile']);
             self::$configFile = $parameters['configFile'];
         }
     }
